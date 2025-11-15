@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product Notifications</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 5px;
+    }
+    h1 {
+      color: #333;
+      font-size: 24px;
+    }
+    #notifications {
+      border: 1px solid #ddd;
+      padding: 15px;
+      height: 350px;
+      overflow-y: auto;
+      margin: 15px 0;
+      background: #fafafa;
+    }
+    .notification {
+      padding: 10px;
+      margin: 8px 0;
+      background: white;
+      border-left: 4px solid #2196f3;
+      font-size: 14px;
+    }
+    .status {
+      padding: 10px;
+      background: #4caf50;
+      color: white;
+      border-radius: 3px;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+    .status.disconnected {
+      background: #f44336;
+    }
+    .clear-btn {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Product Notifications</h1>
+    <div id="status" class="status">Connecting...</div>
+    <div id="notifications"></div>
+    <button class="clear-btn" onclick="clearNotifications()">Clear</button>
+  </div>
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    const notificationsDiv = document.getElementById("notifications");
+    const statusDiv = document.getElementById("status");
+
+    socket.on("connect", () => {
+      statusDiv.textContent = "Connected";
+      statusDiv.classList.remove("disconnected");
+    });
+
+    socket.on("disconnect", () => {
+      statusDiv.textContent = "Disconnected";
+      statusDiv.classList.add("disconnected");
+    });
+
+    socket.on("product_created", (data) => {
+      addNotification("CREATED", data);
+    });
+
+    socket.on("product_updated", (data) => {
+      addNotification("UPDATED", data);
+    });
+
+    socket.on("product_deleted", (data) => {
+      addNotification("DELETED", data);
+    });
+
+    function addNotification(type, data) {
+      const div = document.createElement("div");
+      div.className = "notification";
+      const time = new Date().toLocaleTimeString();
+      div.textContent = `[${time}] ${type}: ${JSON.stringify(data)}`;
+      notificationsDiv.append(div);
+    }
+
+    function clearNotifications() {
+      notificationsDiv.innerHTML = "";
+    }
+  </script>
+</body>
+</html>
