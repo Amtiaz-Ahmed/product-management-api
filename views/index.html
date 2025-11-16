@@ -92,13 +92,23 @@
       addNotification("DELETED", data);
     });
 
-    function addNotification(type, data) {
-      const div = document.createElement("div");
-      div.className = "notification";
-      const time = new Date().toLocaleTimeString();
-      div.textContent = `[${time}] ${type}: ${JSON.stringify(data)}`;
-      notificationsDiv.append(div);
-    }
+function addNotification(type, data) {
+  const div = document.createElement("div");
+  div.className = "notification";
+  const time = new Date().toLocaleTimeString();
+  
+  let message = "";
+  if (type === "CREATED") {
+    message = `Product created successfully - ${data.data.name}`;
+  } else if (type === "UPDATED") {
+    message = `Product updated successfully`;
+  } else if (type === "DELETED") {
+    message = `Product deleted successfully`;
+  }
+  
+  div.textContent = `[${time}] ${message}`;
+  notificationsDiv.append(div);
+}
 
     function clearNotifications() {
       notificationsDiv.innerHTML = "";
